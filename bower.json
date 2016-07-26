@@ -1,0 +1,24 @@
+{
+  "name": "sign-aggregator",
+  "authors": [
+    "Steve",
+    "Tiffany",
+    "Flynn",
+    "Irving"
+  ],
+  "description": "an app that collects arbitrart API data and renders for digital signage",
+  "main": "app",
+  "license": "MIT",
+  "homepage": "",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "bootflat": "*"
+  }
+}
