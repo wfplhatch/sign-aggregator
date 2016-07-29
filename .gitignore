@@ -104,3 +104,4 @@ pyvenv.cfg
 pip-selfcheck.json
 
 /client_secret.json
+.idea/
