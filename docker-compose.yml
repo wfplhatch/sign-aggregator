@@ -1,0 +1,7 @@
+version: '2'
+services:
+  web:
+    build: .
+    command: python /app/app.py --noauth_local_webserver
+    ports:
+      - "5000:5000"
