@@ -7,19 +7,10 @@
         {% endassets %}
     <head>
     <body>
-        {% if name %}
-        <div class="page-header">
-            <h1>Hello {{ name }}!</h1>
-        </div>
-        {% else %}
-        <h1>Hello, World!</h1>
-        {% endif %}
-
         {%if events %}
         {% for event in events %}
-        <div class="row" style="background-color: #ffaa80;margin-top: 5px;margin-bottom: 5px;">
-            <h1>" {{event['summary']}}</h1>
-            <h2>" {{event['start'].get('dateTime', event['start'].get('date'))}} - {{event['end'].get('dateTime', event['end'].get('date'))}}</h2>
+        <div class="row">
+            <p>{{event}}</p>
         </div>
         {%endfor%}
         {%endif%}
