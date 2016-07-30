@@ -106,3 +106,4 @@ pip-selfcheck.json
 /client_secret.json
 .idea/
 static/.webassets-cache/
+/keyfile.json

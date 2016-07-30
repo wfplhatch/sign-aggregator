@@ -1,0 +1,30 @@
+<!doctype html>
+<html>
+    <head>
+        <title>Hello Flask</title>
+        {% assets "css_all" %}
+            <link rel="stylesheet" type="text/css" href="{{ ASSET_URL }}">
+        {% endassets %}
+    <head>
+    <body>
+        <div class="page-header-centered" style="margin-left: 20px;margin-right: 5px;">
+            <h1>HATCH Upcoming Hours</h1s>
+        </div>
+    <div class="container-fluid">
+
+        {%if events %}
+        {% for event in events %}
+        <div class="row" style="background-color: #ffaa80;margin-bottom: 5px;margin-left: 5px;margin-right: 5px;border-radius:15px;padding-left: 10px;padding-right: 10px;">
+            <h1> {{event['summary']}}</h1>
+            <h2> {{event['start'].get('dateTime', event['start'].get('date'))|weekdaytime}} - {{event['end'].get('dateTime', event['end'].get('date'))|justtime}}</h2>
+        </div>
+        {%endfor%}
+        {%endif%}
+    </div>
+
+        {% assets "js_all" %}
+        <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+        {% endassets %}
+    </body>
+</html>
+

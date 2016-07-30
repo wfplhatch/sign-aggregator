@@ -1,17 +1,18 @@
 from __future__ import print_function
-from flask import Flask
-from flask import render_template
+from flask import Flask, render_template
 from flask_assets import Environment, Bundle
 
-import httplib2
-import os
 import datetime
+import dateutil.parser
 
+from httplib2 import Http
 from apiclient import discovery
-import oauth2client
-from oauth2client import client
 from oauth2client import tools
-from oauth2client import file
+from oauth2client.service_account import ServiceAccountCredentials
+import atexit
+
+from apscheduler.schedulers.background import BackgroundScheduler
+from apscheduler.triggers.interval import IntervalTrigger
 
 app = Flask(__name__)
 
@@ -45,80 +46,79 @@ except ImportError:
 
 # If modifying these scopes, delete your previously saved credentials
 # at ~/.credentials/calendar-python-quickstart.json
-SCOPES = 'https://www.googleapis.com/auth/calendar.readonly'
-CLIENT_SECRET_FILE = 'client_secret.json'
+SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
+CLIENT_SECRET_FILE = 'keyfile.json'
 APPLICATION_NAME = 'Google Calendar API Python Quickstart'
 CALENDAR_NAME = 'wfplmakerspace@gmail.com'
+POLLING_INTERVAL = 120
 
 def get_credentials():
-    """Gets valid user credentials from storage.
-
-    If nothing has been stored, or if the stored credentials are invalid,
-    the OAuth2 flow is completed to obtain the new credentials.
-
-    Returns:
-        Credentials, the obtained credential.
-    """
-    home_dir = os.path.expanduser('~')
-    credential_dir = os.path.join(home_dir, '.credentials')
-    if not os.path.exists(credential_dir):
-        os.makedirs(credential_dir)
-    credential_path = os.path.join(credential_dir,
-                                   'calendar-python-quickstart.json')
-
-    store = oauth2client.file.Storage(credential_path)
-    credentials = store.get()
-    if not credentials or credentials.invalid:
-        flow = client.flow_from_clientsecrets(CLIENT_SECRET_FILE, SCOPES)
-        flow.user_agent = APPLICATION_NAME
-        if flags:
-            credentials = tools.run_flow(flow, store, flags)
-        else: # Needed only for compatibility with Python 2.6
-            credentials = tools.run(flow, store)
-        print('Storing credentials to ' + credential_path)
+    credentials = ServiceAccountCredentials.from_json_keyfile_name(CLIENT_SECRET_FILE, scopes=SCOPES)
     return credentials
 
 credentials = get_credentials()
-http = credentials.authorize(httplib2.Http())
-service = discovery.build('calendar', 'v3', http=http)
+http_auth = credentials.authorize(Http())
+service = discovery.build('calendar', 'v3', http=http_auth)
 
-@app.template_filter('strftime')
-def datetimeformat(value, format='%H:%M / %d-%m-%Y'):
-        for fmt in ('%Y-%M-%d', '%Y-%m-%dT%H:%M:%SZ'):
-            try:
-                dang = datetime.datetime.strptime(value, fmt)
-                return dang.strftime(format)
-            except ValueError:
-                pass
-        raise ValueError('no valid date format found')
-
-@app.route('/')
-def upcoming_hours():
+def get_events():
     now = datetime.datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
     print('Getting the upcoming 10 events')
     eventsResult = service.events().list(
         calendarId=CALENDAR_NAME, timeMin=now, maxResults=10, singleEvents=True,
         orderBy='startTime').execute()
+    global events
     events = eventsResult.get('items', [])
 
     if not events:
         print('No upcoming events found.')
-    hours = filter(lambda event: ('Open' in event['summary'] and len(event['summary'])< 10) or ('Closed' in event['summary']), events)
+    global hours
+    hours = filter(
+        lambda event: ('Open' in event['summary'] and len(event['summary']) < 10) or ('Closed' in event['summary']),
+        events)
 
-    return render_template('index.html', name='HATCH', events=hours)
+get_events()
 
+scheduler = BackgroundScheduler()
+scheduler.start()
+scheduler.add_job(
+    func=get_events,
+    trigger=IntervalTrigger(seconds=POLLING_INTERVAL),
+    id='event_polling_job',
+    name='Get event data every minute',
+    replace_existing=True)
+atexit.register(lambda: scheduler.shutdown())
+
+
+# this filter gives you weekday and time with AM/PM
+@app.template_filter('weekdaytime')
+def datetimeformat(value, format='%A %b %d, %I:%M %p'):
+    dang = dateutil.parser.parse(value)
+    return dang.strftime(format)
+
+# this filter gives you just the time with AM/PM
+@app.template_filter('justtime')
+def datetimeformat(value, format='%I:%M %p'):
+    dang = dateutil.parser.parse(value)
+    return dang.strftime(format)
+
+# Simple "welcome" page
+@app.route('/')
+def home_page():
+    return render_template('index.html')
+
+# Google Calendar Hours page
+@app.route('/hours')
+def upcoming_hours():
+    return render_template('hours.html', name='HATCH', events=hours)
+
+# raw event query feed for debugging / development
 @app.route('/rawfeed')
 def raw_feed():
-    now = datetime.datetime.utcnow().isoformat() + 'Z'  # 'Z' indicates UTC time
-    print('Getting the upcoming 10 events')
-    eventsResult = service.events().list(
-        calendarId=CALENDAR_NAME, timeMin=now, maxResults=10, singleEvents=True,
-        orderBy='startTime').execute()
-    events = eventsResult.get('items', [])
-
-    if not events:
-        print('No upcoming events found.')
     return render_template('rawfeed.html', events=events)
+
+@app.errorhandler(404)
+def page_not_found(e):
+    return render_template('404.html'), 404
 
 if __name__ == '__main__':
     app.run()
