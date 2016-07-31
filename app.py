@@ -68,8 +68,8 @@ def get_credentials():
     if os.path.isfile(CLIENT_SECRET_FILE):
         credentials = ServiceAccountCredentials.from_json_keyfile_name(CLIENT_SECRET_FILE, scopes=API_SCOPES)
     else:
-        keyfile_data=json.loads(os.environ.get('KEYFILE'))
-        credentials = ServiceAccountCredentials.from_json_keyfile_dict(keyfile_dict=keyfile_data,scopes=API_SCOPES)
+        keyfile_data = json.loads(os.environ.get('KEYFILE'))
+        credentials = ServiceAccountCredentials.from_json_keyfile_dict(keyfile_dict=keyfile_data, scopes=API_SCOPES)
     return credentials
 
 
@@ -127,9 +127,6 @@ def datetimeformat(value, format='%A %b %d, %I:%M %p'):
 def datetimeformat(value, format='%I:%M %p'):
     dang = dateutil.parser.parse(value)
     return dang.strftime(format)
-
-
-
 
 
 # Google Calendar Hours page
