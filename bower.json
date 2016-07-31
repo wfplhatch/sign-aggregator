@@ -6,7 +6,7 @@
     "Flynn",
     "Irving"
   ],
-  "description": "an app that collects arbitrart API data and renders for digital signage",
+  "description": "an app that collects arbitrary API data and renders for digital signage",
   "main": "app",
   "license": "MIT",
   "homepage": "",
