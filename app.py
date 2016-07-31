@@ -47,6 +47,13 @@ try:
 except ImportError:
     flags = None
 
+
+# Simple "welcome" page
+@app.route('/')
+def home_page():
+    return render_template('index.html')
+
+
 # application constants
 API_SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
 CLIENT_SECRET_FILE = 'keyfile.json'
@@ -122,10 +129,7 @@ def datetimeformat(value, format='%I:%M %p'):
     return dang.strftime(format)
 
 
-# Simple "welcome" page
-@app.route('/')
-def home_page():
-    return render_template('index.html')
+
 
 
 # Google Calendar Hours page
