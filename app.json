@@ -1,0 +1,24 @@
+{
+  "name": "sign-aggregator",
+  "description": "",
+  "scripts": {
+  },
+  "env": {
+    "KEYFILE": {
+      "required": true
+    }
+  },
+  "formation": {
+    "web": {
+      "quantity": 1
+    }
+  },
+  "addons": [
+
+  ],
+  "buildpacks": [
+    {
+      "url": "heroku/python"
+    }
+  ]
+}
