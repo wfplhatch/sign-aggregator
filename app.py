@@ -138,12 +138,6 @@ def upcoming_hours():
     return render_template('hours.html', name='HATCH', events=hours)
 
 
-# raw event query feed for debugging / development
-@app.route('/rawfeed')
-def raw_feed():
-    return render_template('rawfeed.html', events=events)
-
-
 # in the event of a 404...
 @app.errorhandler(404)
 def page_not_found(e):
