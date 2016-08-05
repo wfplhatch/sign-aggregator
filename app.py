@@ -80,6 +80,11 @@ def twitter_feed():
 def facebook_feed():
     return render_template('facebook.html')
 
+# MEETUP FEED
+@app.route('/meetup')
+def meetup_feed():
+    return render_template('meetup.html')
+
 # get service account credentials on the specified API_SCOPES
 def get_credentials():
     if os.path.isfile(CLIENT_SECRET_FILE):
