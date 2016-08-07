@@ -8,18 +8,53 @@
     <head>
     <body>
         <div class="page-header-centered" style="margin-left: 20px;margin-right: 5px;">
-            <h1>HATCH Upcoming Hours</h1s>
+            <h1>Upcoming Hours</h1s>
         </div>
-    <div class="container-fluid">
+    <div class="container-fluid hours">
 
-        {%if events %}
+        {% if events %}
         {% for event in events %}
-        <div class="row" style="background-color: #ffaa80;margin-bottom: 5px;margin-left: 5px;margin-right: 5px;border-radius:15px;padding-left: 10px;padding-right: 10px;">
-            <h1> {{event['summary']}}</h1>
-            <h2> {{event['start'].get('dateTime', event['start'].get('date'))|weekdaytime}} - {{event['end'].get('dateTime', event['end'].get('date'))|justtime}}</h2>
-        </div>
-        {%endfor%}
-        {%endif%}
+            {% if event['summary'].lower().strip() == "open" %}
+                <div class="row open">
+            {% elif event['summary'].lower().strip() == "closed" %}
+                <div class="row closed">
+            {% endif %}
+
+            <!-- date -->
+            <div class="weekday">
+                <h1>
+                {% if loop.index0 == 0  %}
+                    TODAY
+                {% elif loop.index0 == 1 %}
+                    TOMORROW
+                {% else %}
+                    {{event['start'].get('dateTime', event['start'].get('date'))|weekday}}
+                {% endif %}
+                </h1>
+            </div>
+
+            <div class="date">
+                 <h3>{{event['start'].get('dateTime', event['start'].get('date'))|date}}</h3>
+            </div>
+
+            {% if event['summary'].lower().strip() == "closed" %}
+               <div class="start_time">
+                CLOSED
+                </div>
+
+            {% else %}
+             <div class="start_time">
+                {{event['start'].get('dateTime', event['start'].get('date'))|time}}
+            </div>
+
+            <div class="end_time">
+                {{event['end'].get('dateTime', event['start'].get('date'))|time}}
+            </div>
+            {% endif %}
+
+            </div>
+        {% endfor %}
+        {% endif %}
     </div>
 
         {% assets "js_all" %}
