@@ -1,11 +1,39 @@
-.row{
-	margin: 0px 5px 5px 5px;
-	border-radius:15px;
-	padding: 0px 10px;
+/*!
+ * styling for the /hours route
+ */
+
+.hours .row{
+  margin: 0px 5px 5px 5px;
+  border-radius:15px;
+  padding: 0px 10px;
+  color: white;
+  position: relative;
+  padding-bottom: 13px;
 }
-.row.open{
-	background: #5EBA46;
+.hours .row.first{
+  background: #6200f0 !important;
 }
-.row.closed{
-	background: #E14C41;
+.hours .row.open{
+  background: #5EBA46;
+}
+.hours .row.closed{
+  background: #964b4b;
+}
+.hours .date{
+  margin-top: -20px;
+}
+.hours .start_time{
+    float: right;
+    position: absolute;
+    top: 12px;
+    right: 20px;
+    font-size: 30px;
+}
+.hours .end_time{
+    float: right;
+    position: absolute;
+    top: 54px;
+    right: 20px;
+    font-size: 30px;
+    border-top: 3px solid white;
 }

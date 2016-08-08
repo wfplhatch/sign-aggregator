@@ -36,6 +36,7 @@ css = Bundle(
     'bower_components/bootflat/css/bootflat.css',
     'bower_components/bootflat/css/bootflat-extensions.css',
     'bower_components/bootflat/css/font-awesome.min.css',
+    'hours.css',
     output='css_all.css'
 )
 assets.register('css_all', css)

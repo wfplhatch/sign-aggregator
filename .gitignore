@@ -107,3 +107,5 @@ pip-selfcheck.json
 .idea/
 static/.webassets-cache/
 /keyfile.json
+/static/js_all.js
+/static/css_all.css
