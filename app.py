@@ -54,7 +54,9 @@ def home_page():
     return render_template('index.html')
 
 
-# application constants
+# APPLICATION CONSTANTS
+
+# GOOGLE CALENDAR
 API_SCOPES = ['https://www.googleapis.com/auth/calendar.readonly']
 CLIENT_SECRET_FILE = 'keyfile.json'
 APPLICATION_NAME = 'sign-aggregator'
@@ -62,6 +64,26 @@ CALENDAR_NAME = 'wfplmakerspace@gmail.com'
 POLLING_INTERVAL = 120
 MAX_RESULTS = 10
 
+###### ROUTES #######
+# GOOGLE CALENDAR
+@app.route('/hours')
+def upcoming_hours():
+    return render_template('hours.html', name='HATCH', events=hours)
+
+# TWITTER FEED
+@app.route('/twitter')
+def twitter_feed():
+    return render_template('twitter.html')
+
+# FACEBOOK FEED
+@app.route('/facebook')
+def facebook_feed():
+    return render_template('facebook.html')
+
+# MEETUP FEED
+@app.route('/meetup')
+def meetup_feed():
+    return render_template('meetup.html')
 
 # get service account credentials on the specified API_SCOPES
 def get_credentials():
@@ -114,26 +136,23 @@ scheduler.add_job(
     replace_existing=True)
 atexit.register(lambda: scheduler.shutdown())
 
-
-# this filter gives you weekday and time with AM/PM
-@app.template_filter('weekdaytime')
-def datetimeformat(value, format='%A %b %d, %I:%M %p'):
+# filter for date formatting (Jul 3) %b %-d
+@app.template_filter('date')
+def datetimeformat(value, format='%b %-d'):
     dang = dateutil.parser.parse(value)
     return dang.strftime(format)
 
-
-# this filter gives you just the time with AM/PM
-@app.template_filter('justtime')
-def datetimeformat(value, format='%I:%M %p'):
+# filter for abbreviated weekday name (Sun, Mon) %a
+@app.template_filter('weekday')
+def datetimeformat(value, format='%a'):
     dang = dateutil.parser.parse(value)
-    return dang.strftime(format)
+    return dang.strftime(format).upper()
 
-
-# Google Calendar Hours page
-@app.route('/hours')
-def upcoming_hours():
-    return render_template('hours.html', name='HATCH', events=hours)
-
+# filter for time (6:00) %-H:%-M
+@app.template_filter('time')
+def datetimeformat(value, format='%-I:%M %p'):
+    dang = dateutil.parser.parse(value)
+    return dang.strftime(format).lower()
 
 # in the event of a 404...
 @app.errorhandler(404)
